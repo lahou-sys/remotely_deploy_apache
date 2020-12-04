@@ -1,12 +1,12 @@
 {
   
   "srv1":
-  {"host": "10.0.2.8",
+  {"host": "10.0.2.9",
   "user": "admin1",
   "password": "12345678",
   "port": "22"},
   "srv2":
-  {"host": "10.0.2.10",
+  {"host": "10.0.2.11",
   "user": "admin1",
   "password": "12345678",
   "port": "22"}

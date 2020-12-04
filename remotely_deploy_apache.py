@@ -7,7 +7,7 @@ Author: Lahoucine BEN MOULAY
 
 License:
     MIT License
-    Copyright (c) 2020 Lahoucine BEN MOULAY
+    Copyright (c) 2020 lahou-sys
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
     in the Software without restriction, including without limitation the rights
@@ -35,6 +35,26 @@ Mac Users will need to install ssh-copy-id before attempting to use this script.
 # Import modules
 ###############
 
+	"""Test if the modules exist for import , if not stop the script.
+	
+	"""
+
+module_names = ["json","os","sys","subprocess","argparse","shutil","requests"]
+
+
+for mod in module_names:
+	try:
+		__import__(mod)
+	except ImportError:
+		print(f"""You need {mod}!
+				install it from http://pypi.python.org/pypi/{mod}
+				or run pip install {mod}.""")
+		raise
+
+"""Import of modules
+	
+	"""
+
 import json
 import os
 import sys
@@ -48,7 +68,8 @@ import requests
 ###############
 
 CUR_USER = os.getlogin()
-PRIV_SSH_DIR = "/home/%s/.ssh" % (CUR_USER)
+HOME_USER = os.path.expanduser("~")
+PRIV_SSH_DIR = HOME_USER + "/.ssh"
 BIN_DIR= "/usr/bin"
 
 ###############
@@ -170,7 +191,7 @@ def push_key(dict_srv):
 					user = dict_srv[item]["user"]
 					password = dict_srv[item]["password"]
 					show(f'SSH key found. Pushing key to remote server : {host}')
-					command = "sshpass -p %s ssh-copy-id -p %s %s@%s" % (password, port, user, host)
+					command = "sshpass -p %s ssh-copy-id -f -p %s %s@%s" % (password, port, user, host)
 					subprocess.call(command, shell=True)
 			else:
 				show("ssh-copy-id and sshpass required.")
