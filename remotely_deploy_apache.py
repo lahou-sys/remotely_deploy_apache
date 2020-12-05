@@ -35,9 +35,9 @@ Mac Users will need to install ssh-copy-id before attempting to use this script.
 # Import modules
 ###############
 
-	"""Test if the modules exist for import , if not stop the script.
+"""Test if the modules exist for import , if not stop the script.
 	
-	"""
+"""
 
 module_names = ["json","os","sys","subprocess","argparse","shutil","requests"]
 
@@ -53,7 +53,7 @@ for mod in module_names:
 
 """Import of modules
 	
-	"""
+"""
 
 import json
 import os
@@ -70,7 +70,9 @@ import requests
 CUR_USER = os.getlogin()
 HOME_USER = os.path.expanduser("~")
 PRIV_SSH_DIR = HOME_USER + "/.ssh"
-BIN_DIR= "/usr/bin"
+BIN_DIR = "/usr/bin"
+WORK_DIR = os.path.dirname(sys.argv[0]) 
+
 
 ###############
 # Fonctions
@@ -93,21 +95,76 @@ def list_srv():
 			The file must have this structure for example:
 			{
 			"srv1":
-				{"host": "ip address",
+				{"host": "ip address or hostname",
 				"user": "userunix",
 				"password": "toto",
-				"port": "22"},
+				"port": "22",
+				"http_interface": "*",
+				"http_port": "80",
+				"servername": "ip address or FQN or domain name",
+				"serveradmin": "webmaster@example.com",
+				"documentroot": "/var/www/site1"},
 			"srv2":
 				{"host": "hostanme",
 				"user": "alice",
 				"password": "12345678",
-				"port": "622"}
+				"port": "622",
+				"http_interface": "ip address",
+				"http_port": "8080",
+				"servername": "ip address or FQN or domain name",
+				"serveradmin": "webmaster@example.com",
+				"documentroot": "/var/www/site1"},
 			}
 
 		"""
 		with open("info_in.json", "r") as f:
 			dict_srv = json.load(f)
 			return dict_srv
+
+def test_exist_json():
+	#Description
+
+		"""Test if the file exists in the script's working directory.
+
+		"""
+		os.chdir(WORK_DIR)
+		try:
+			with open("info_in.json", "r") as f:
+				pass
+		except FileNotFoundError:
+			print("""The file "info_in.json" is not present in the script's working directory.
+					Please consult the documentation...""")
+			raise
+
+
+
+def test_input_json(dict_srv):
+	#Description
+
+		"""Test the entries in the json file.
+
+		"""
+		dict_srv_template = {"host": "", \
+				"user": "", \
+				"password": "", \
+				"port": "", \
+				"http_interface": "", \
+				"http_port": "", \
+				"servername": "", \
+				"serveradmin": "", \
+				"documentroot": "", \
+				"file_vhost": ""}
+
+		for item in dict_srv.keys():
+			for key in dict_srv_template.keys():
+				if not key in dict_srv[item]:
+					try:
+						print(dict_srv[key])
+						break
+					except KeyError:
+						print(f"""The "{key}" for server "{item}": this information is missing or incorrectly entered in the "info_in.json" file.
+							Please consult the documentation...""")
+						raise
 
 
 def remote_cmd(command,host,user,priv_ssh,port=22):
@@ -121,9 +178,11 @@ def remote_cmd(command,host,user,priv_ssh,port=22):
 			port: ssh network port to use
 
 		"""
+		show("In progrees...")
 		cmd_ssh = shutil.which('ssh')
 		cmd = "%s -i %s -p %s %s@%s '%s'" % (cmd_ssh,priv_ssh,port,user,host,command)
 		subprocess.call(cmd, shell=True)
+
 
 
 def key_present():
@@ -227,7 +286,7 @@ def update_remote(dict_srv):
 			priv_ssh = "%s/id_rsa" % (PRIV_SSH_DIR)
 			password = dict_srv[item]["password"]
 			show(f'Update to remote server : {host}')
-			remote_cmd('echo %s | sudo -S apt update -y' % (password),host,user,priv_ssh,port)
+			remote_cmd('echo %s | sudo -S apt-get update -y' % (password),host,user,priv_ssh,port)
 
 
 def upgrade_remote(dict_srv):
@@ -245,7 +304,7 @@ def upgrade_remote(dict_srv):
 			priv_ssh = "%s/id_rsa" % (PRIV_SSH_DIR)
 			password = dict_srv[item]["password"]
 			show(f'Upgrade to remote server : {host}')
-			remote_cmd('echo %s | sudo -S apt upgrade -y' % (password),host,user,priv_ssh,port)
+			remote_cmd('echo %s | sudo -S apt-get upgrade -y' % (password),host,user,priv_ssh,port)
 
 
 def install_remote_apache(dict_srv):
@@ -263,7 +322,86 @@ def install_remote_apache(dict_srv):
 			priv_ssh = "%s/id_rsa" % (PRIV_SSH_DIR)
 			password = dict_srv[item]["password"]
 			show(f'Install package Apache to remote server : {host}')
-			remote_cmd('echo %s | sudo -S apt install apache2 -y' % (password),host,user,priv_ssh,port)
+			remote_cmd('echo %s | sudo -S apt-get install apache2 -y' % (password),host,user,priv_ssh,port)
+
+
+def create_vhost_documentroot(dict_srv):
+	#Description
+
+		"""Creation of the folder hosting the website files.
+
+		"""
+		for item in dict_srv:
+			host = dict_srv[item]["host"]
+			port = dict_srv[item]["port"]
+			user = dict_srv[item]["user"]
+			priv_ssh = "%s/id_rsa" % (PRIV_SSH_DIR)
+			password = dict_srv[item]["password"]
+			documentroot = dict_srv[item]["documentroot"]
+			show(f'Create the folder hosting the website files : {host}')
+			remote_cmd('echo %s | sudo -S mkdir -p %s' % (password, documentroot),host,user,priv_ssh,port)
+			remote_cmd('echo %s | sudo -S chown -R www-data: %s' % (password, documentroot),host,user,priv_ssh,port)
+
+def create_remote_vhost_file(dict_srv):
+	#Description
+
+		"""creation of the remote vhost file.
+
+		"""
+		for item in dict_srv:
+			host = dict_srv[item]["host"]
+			port = dict_srv[item]["port"]
+			user = dict_srv[item]["user"]
+			priv_ssh = "%s/id_rsa" % (PRIV_SSH_DIR)
+			password = dict_srv[item]["password"]
+			documentroot = dict_srv[item]["documentroot"]
+			http_interface = dict_srv[item]["http_interface"]
+			http_port = dict_srv[item]["http_port"]
+			servername = dict_srv[item]["servername"]
+			serveradmin = dict_srv[item]["serveradmin"]
+			file_vhost = dict_srv[item]["file_vhost"]
+			dir_conf_vhost = "/etc/apache2/sites-available/"
+			vhost_file_tmp = "/tmp/" + file_vhost
+			print(vhost_file_tmp)
+			with open(vhost_file_tmp, "w") as f:
+				f.write('<VirtualHost %s:%s>\n' % (http_interface, http_port))
+				f.write('\tServerName %s\n' % (servername))
+				f.write('\tServerAdmin %s\n' % (serveradmin))
+				f.write('\tDocumentRoot %s\n' % (documentroot))
+				f.write('\n')
+				f.write('\t<Directory %s>\n' % (documentroot))
+				f.write('\t\tOptions -Indexes +FollowSymLinks\n')
+				f.write('\t\tAllowOverride All\n')
+				f.write('\t</Directory>\n')
+				f.write('\n')
+				f.write('\tErrorLog ${APACHE_LOG_DIR}/%s.log\n' % (servername))
+				f.write('\tCustomLog ${APACHE_LOG_DIR}/%s.log combined\n' % (servername))
+				f.write('</VirtualHost>')
+				f.close()
+			show(f'Create the remote vhost file: {host}')
+			command = "scp -i %s -P %s %s %s@%s:/tmp/" % (priv_ssh, port, vhost_file_tmp, user, host)
+			subprocess.call(command, shell=True)
+			remote_cmd('echo %s | sudo -S mv /tmp/%s %s' % (password, file_vhost, dir_conf_vhost),host,user,priv_ssh,port)
+			remote_cmd('echo %s | sudo -S chown -R root: %s/%s' % (password, dir_conf_vhost, file_vhost),host,user,priv_ssh,port)
+			os.remove(vhost_file_tmp)
+
+
+def disable_remote_site_default(dict_srv):
+	#Description
+
+		"""Disable apache default site.
+
+		"""
+		for item in dict_srv:
+			host = dict_srv[item]["host"]
+			port = dict_srv[item]["port"]
+			user = dict_srv[item]["user"]
+			priv_ssh = "%s/id_rsa" % (PRIV_SSH_DIR)
+			password = dict_srv[item]["password"]
+			documentroot = dict_srv[item]["documentroot"]
+			show(f'Disable apache default site : {host}')
+			remote_cmd('echo %s | sudo -S a2dissite *default*' % (password),host,user,priv_ssh,port)
+			remote_cmd('echo %s | sudo -S systemctl reload apache2' % (password),host,user,priv_ssh,port)
 
 
 def url_check(url):
@@ -309,17 +447,65 @@ def main():
 	"""Start of script.
 	
 	"""
-    
+	decorateur = "\n" + 80*'#'
+	decorateur_min = "\n" + 40*'#'
+	
+	show(decorateur)
+	show("TEST THE JSON FILE EXIST")
+	show(decorateur)
+	test_exist_json()
+	show(decorateur_min)
 	dict_srv = list_srv()
+	test_input_json(dict_srv)
+	show(decorateur_min)
 	nbr_srv(dict_srv)
+	show(decorateur)
+
+	show(decorateur)
+	show("GENERATE RSA KEY")
+	show(decorateur)
 	gen_key()
+	show(decorateur)
+
+	show(decorateur)
+	show("PUSH RSA KEY")
+	show(decorateur)
 	add_fingerprint(dict_srv)
+	show(decorateur_min)
 	push_key(dict_srv)
+	show(decorateur)
+
+	show(decorateur)
+	show("'UPDATE' AND 'UPGRADE' REMOTE SERVER")
+	show(decorateur)
 	update_remote(dict_srv)
+	show(decorateur_min)
 	upgrade_remote(dict_srv)
+	show(decorateur)
+
+	show(decorateur)
+	show("INSTALL APACHE TO REMOTE SERVER")
+	show(decorateur)
 	install_remote_apache(dict_srv)
+	show(decorateur)
+
+	show(decorateur)
+	show("CONFIGURATION OF APACHE TO REMOTE SERVER")
+	show(decorateur)
+	create_vhost_documentroot(dict_srv)
+	show(decorateur_min)
+	create_remote_vhost_file(dict_srv)
+	show(decorateur_min)
+	disable_remote_site_default(dict_srv)
+	show(decorateur)
+	
+	show(decorateur)
+	show("TEST OF APACHE TO REMOTE SERVER")
+	show(decorateur)
 	nbr_srv(dict_srv)
+	show(decorateur_min)
 	test_http_srv(dict_srv)
+	show(decorateur)
 
 # Running the script
 
