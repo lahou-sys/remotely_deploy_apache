@@ -104,6 +104,8 @@ def list_srv():
 				"servername": "ip address or FQN or domain name",
 				"serveradmin": "webmaster@example.com",
 				"documentroot": "/var/www/site1"},
+				"file_vhost": "site1.conf",
+				"url_source_website": "https://github.com/xxxxxx/xxxxx.git"},
 			"srv2":
 				{"host": "hostanme",
 				"user": "alice",
@@ -113,7 +115,9 @@ def list_srv():
 				"http_port": "8080",
 				"servername": "ip address or FQN or domain name",
 				"serveradmin": "webmaster@example.com",
-				"documentroot": "/var/www/site1"},
+				"documentroot": "/var/www/site2",
+				"file_vhost": "site2.conf",
+				"url_source_website": "https://github.com/xxxxxx/xxxxx.git"}
 			}
 
 		"""
@@ -153,7 +157,8 @@ def test_input_json(dict_srv):
 				"servername": "", \
 				"serveradmin": "", \
 				"documentroot": "", \
-				"file_vhost": ""}
+				"file_vhost": "", \
+				"url_source_website": ""}
 
 		for item in dict_srv.keys():
 			for key in dict_srv_template.keys():
@@ -286,7 +291,8 @@ def update_remote(dict_srv):
 			priv_ssh = "%s/id_rsa" % (PRIV_SSH_DIR)
 			password = dict_srv[item]["password"]
 			show(f'Update to remote server : {host}')
-			remote_cmd('echo %s | sudo -S apt-get update -y' % (password),host,user,priv_ssh,port)
+			remote_cmd('echo -e "%s\n" | sudo -S -p "....." apt-get -qq update -y' % (password),host,user,priv_ssh,port)
+			show("\n")
 
 
 def upgrade_remote(dict_srv):
@@ -304,7 +310,8 @@ def upgrade_remote(dict_srv):
 			priv_ssh = "%s/id_rsa" % (PRIV_SSH_DIR)
 			password = dict_srv[item]["password"]
 			show(f'Upgrade to remote server : {host}')
-			remote_cmd('echo %s | sudo -S apt-get upgrade -y' % (password),host,user,priv_ssh,port)
+			remote_cmd('echo -e "%s\n" | sudo -S -p "....." apt-get -qq upgrade -y' % (password),host,user,priv_ssh,port)
+			show("\n")
 
 
 def install_remote_apache(dict_srv):
@@ -322,7 +329,8 @@ def install_remote_apache(dict_srv):
 			priv_ssh = "%s/id_rsa" % (PRIV_SSH_DIR)
 			password = dict_srv[item]["password"]
 			show(f'Install package Apache to remote server : {host}')
-			remote_cmd('echo %s | sudo -S apt-get install apache2 -y' % (password),host,user,priv_ssh,port)
+			remote_cmd('echo -e "%s\n" | sudo -S -p "....." apt-get install -qq apache2 -y' % (password),host,user,priv_ssh,port)
+			show("\n")
 
 
 def create_vhost_documentroot(dict_srv):
@@ -339,8 +347,10 @@ def create_vhost_documentroot(dict_srv):
 			password = dict_srv[item]["password"]
 			documentroot = dict_srv[item]["documentroot"]
 			show(f'Create the folder hosting the website files : {host}')
-			remote_cmd('echo %s | sudo -S mkdir -p %s' % (password, documentroot),host,user,priv_ssh,port)
-			remote_cmd('echo %s | sudo -S chown -R www-data: %s' % (password, documentroot),host,user,priv_ssh,port)
+			remote_cmd('echo -e "%s\n" | sudo -S -p "....." mkdir -p %s' % (password, documentroot),host,user,priv_ssh,port)
+			remote_cmd('echo -e "%s\n" | sudo -S -p "....." chown -R www-data: %s' % (password, documentroot),host,user,priv_ssh,port)
+			show("\n")
+
 
 def create_remote_vhost_file(dict_srv):
 	#Description
@@ -381,9 +391,10 @@ def create_remote_vhost_file(dict_srv):
 			show(f'Create the remote vhost file: {host}')
 			command = "scp -i %s -P %s %s %s@%s:/tmp/" % (priv_ssh, port, vhost_file_tmp, user, host)
 			subprocess.call(command, shell=True)
-			remote_cmd('echo %s | sudo -S mv /tmp/%s %s' % (password, file_vhost, dir_conf_vhost),host,user,priv_ssh,port)
-			remote_cmd('echo %s | sudo -S chown -R root: %s/%s' % (password, dir_conf_vhost, file_vhost),host,user,priv_ssh,port)
+			remote_cmd('echo -e "%s\n" | sudo -S -p "....." mv /tmp/%s %s' % (password, file_vhost, dir_conf_vhost),host,user,priv_ssh,port)
+			remote_cmd('echo -e "%s\n" | sudo -S -p "....." chown -R root: %s/%s' % (password, dir_conf_vhost, file_vhost),host,user,priv_ssh,port)
 			os.remove(vhost_file_tmp)
+			show("\n")
 
 
 def disable_remote_site_default(dict_srv):
@@ -398,10 +409,52 @@ def disable_remote_site_default(dict_srv):
 			user = dict_srv[item]["user"]
 			priv_ssh = "%s/id_rsa" % (PRIV_SSH_DIR)
 			password = dict_srv[item]["password"]
-			documentroot = dict_srv[item]["documentroot"]
 			show(f'Disable apache default site : {host}')
-			remote_cmd('echo %s | sudo -S a2dissite *default*' % (password),host,user,priv_ssh,port)
-			remote_cmd('echo %s | sudo -S systemctl reload apache2' % (password),host,user,priv_ssh,port)
+			remote_cmd('echo -e "%s\n" | sudo -S -p "....." a2dissite *default*' % (password),host,user,priv_ssh,port)
+			remote_cmd('echo -e "%s\n" | sudo -S -p "....." systemctl reload apache2' % (password),host,user,priv_ssh,port)
+			show("\n")
+
+
+def deploy_website_with_git(dict_srv):
+	#Description
+
+		"""Deploy the website sources on the remote server.
+
+		"""
+		for item in dict_srv:
+			host = dict_srv[item]["host"]
+			port = dict_srv[item]["port"]
+			user = dict_srv[item]["user"]
+			priv_ssh = "%s/id_rsa" % (PRIV_SSH_DIR)
+			password = dict_srv[item]["password"]
+			documentroot = dict_srv[item]["documentroot"]
+			url_source_website = dict_srv[item]["url_source_website"]
+			show(f'Deploy the website sources on the remote server : {host}')
+			remote_cmd('echo -e "%s\n" | sudo -S -p "....." apt-get -qq -y install git' % (password),host,user,priv_ssh,port)
+			remote_cmd('echo -e "%s\n" | sudo -S -p "....." rm -rf %s/*' % (password, documentroot),host,user,priv_ssh,port)
+			remote_cmd('echo -e "%s\n" | sudo -S -p "....." rm -rf %s/.* 2> /dev/null' % (password, documentroot),host,user,priv_ssh,port)
+			remote_cmd('echo -e "%s\n" | sudo -S -p "....." git clone %s %s > /dev/null' % (password, url_source_website, documentroot),host,user,priv_ssh,port)
+			remote_cmd('echo -e "%s\n" | sudo -S -p "....." chown -R www-data: %s/*' % (password, documentroot),host,user,priv_ssh,port)
+			show("\n")
+
+
+def enable_remote_site_(dict_srv):
+	#Description
+
+		"""Enable apache deployed site.
+
+		"""
+		for item in dict_srv:
+			host = dict_srv[item]["host"]
+			port = dict_srv[item]["port"]
+			user = dict_srv[item]["user"]
+			priv_ssh = "%s/id_rsa" % (PRIV_SSH_DIR)
+			password = dict_srv[item]["password"]
+			file_vhost = dict_srv[item]["file_vhost"]
+			show(f'Enable apache deployed site : {host}')
+			remote_cmd('echo -e "%s\n" | sudo -S -p "....." a2ensite %s' % (password, file_vhost),host,user,priv_ssh,port)
+			remote_cmd('echo -e "%s\n" | sudo -S -p "....." systemctl reload apache2' % (password),host,user,priv_ssh,port)
+			show("\n")
 
 
 def url_check(url):
@@ -497,6 +550,14 @@ def main():
 	create_remote_vhost_file(dict_srv)
 	show(decorateur_min)
 	disable_remote_site_default(dict_srv)
+	show(decorateur)
+
+	show(decorateur)
+	show("DEPLOY SOURCE WEBSITE FROM GITHUB")
+	show(decorateur)
+	deploy_website_with_git(dict_srv)
+	show(decorateur_min)
+	enable_remote_site_(dict_srv)
 	show(decorateur)
 	
 	show(decorateur)

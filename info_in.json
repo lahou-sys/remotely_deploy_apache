@@ -10,7 +10,8 @@
   "servername": "10.0.2.9",
   "serveradmin": "webmaster@example.com",
   "documentroot": "/var/www/site1",
-  "file_vhost": "site1.conf"},
+  "file_vhost": "site1.conf",
+  "url_source_website": "https://github.com/k4m4/donations.git"},
   "srv2":
   {"host": "10.0.2.11",
   "user": "admin1",
@@ -21,5 +22,6 @@
   "servername": "10.0.2.11",
   "serveradmin": "webmaster@example.com",
   "documentroot": "/var/www/site2",
-  "file_vhost": "site2.conf"}
+  "file_vhost": "site2.conf",
+  "url_source_website": "https://github.com/BuckyMaler/global.git"}
 }
