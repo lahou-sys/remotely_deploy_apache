@@ -2,7 +2,7 @@
 
 REMOTELY DEPLOY APACHE AND DEPLOY WEBSITES FROM GITHUB AUTOMATICALLY TO REMOTE SERVERS
 
-![GitHub](https://img.shields.io/github/license/lahou-sys/remotely_deploy_apache) ![GitHub contributors](https://img.shields.io/github/contributors/lahou-sys/remotely_deploy_apache)
+[![GitHub](https://img.shields.io/github/license/lahou-sys/remotely_deploy_apache)](LICENSE) ![GitHub contributors](https://img.shields.io/github/contributors/lahou-sys/remotely_deploy_apache)
 
 # Table of Contents <a name="Table_of_Contents"></a>
 * [Introduction](#INTRODUCTION)
@@ -23,6 +23,10 @@ REMOTELY DEPLOY APACHE AND DEPLOY WEBSITES FROM GITHUB AUTOMATICALLY TO REMOTE S
   * [How to use the RDA script](#How_to_use)
       * [Download the GitHub project](#Download_the_GitHub)
       * [Running the script RDA](#Running_the_script)
+  * [Development](#Development)
+  * [Todolist](#Todolist)
+  * [License](#License)
+  * [Contributor Covenant](#Contributor_Covenant)
 
 
 
@@ -390,26 +394,41 @@ Enjoy it !
 [<div align="center">[Table of Contents]</div>](#Table_of_Contents)
 
 
-## Development
+## Development <a name="Development"></a>
 
 Want to contribute? Great!
 
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](code_of_conduct.md) 
+First, please consider contributing to RDA.
+It's people like you who make RDA such a great tool.
+
+Please consult the following [CONTRIBUTTING](CONTRIBUTTING.md) file to understand the procedure.
+
+Also read the ["Contributor Covenant"](code_of_conduct.md) to complete the content of the CONTRIBUTTING file.
 
 
-## Todos
 
- - Write MORE Tests
+[<div align="center">[Table of Contents]</div>](#Table_of_Contents)
+
+
+## Todolist <a name="Todolist"></a>
+
+ - Add the HTTPS option
  - Add Night Mode
+ - Make the script compatible with other Linux distributions
+ - Add the PHP option
+ - Allow the script to take arguments as input
 
-License
+[<div align="center">[Table of Contents]</div>](#Table_of_Contents)
+
+## License <a name="License"></a>
 ----
 
-MIT https://img.shields.io/badge/<LABEL>-<MESSAGE>-<COLOR>
+[MIT](LICENSE) 
 
-## Contributor Covenant
+## Contributor Covenant <a name="Contributor_Covenant"></a>
 
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](code_of_conduct.md) 
 
 **Free Software, Hell Yeah!**
 
+[<div align="center">[Table of Contents]</div>](#Table_of_Contents)
