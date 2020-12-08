@@ -401,9 +401,9 @@ Want to contribute? Great!
 First, please consider contributing to RDA.
 It's people like you who make RDA such a great tool.
 
-Please consult the following [CONTRIBUTTING](CONTRIBUTTING.md) file to understand the procedure.
+Please consult the following [CONTRIBUTING.md](CONTRIBUTING.md) file to understand the procedure.
 
-Also read the ["Contributor Covenant"](code_of_conduct.md) to complete the content of the CONTRIBUTTING file.
+Also read the ["Contributor Covenant"](code_of_conduct.md) to complete the content of the CONTRIBUTING.md file.
 
 
 
@@ -413,7 +413,6 @@ Also read the ["Contributor Covenant"](code_of_conduct.md) to complete the conte
 ## Todolist <a name="Todolist"></a>
 
  - Add the HTTPS option
- - Add Night Mode
  - Make the script compatible with other Linux distributions
  - Add the PHP option
  - Allow the script to take arguments as input
