@@ -2,7 +2,7 @@
 
 REMOTELY DEPLOY APACHE AND DEPLOY WEBSITES FROM GITHUB AUTOMATICALLY TO REMOTE SERVERS
 
-[![GitHub](https://img.shields.io/github/license/lahou-sys/remotely_deploy_apache)](LICENSE) ![GitHub contributors](https://img.shields.io/github/contributors/lahou-sys/remotely_deploy_apache)
+[![GitHub](https://img.shields.io/github/license/lahou-sys/remotely_deploy_apache)](LICENSE) [![GitHub contributors](https://img.shields.io/github/contributors/lahou-sys/remotely_deploy_apache)](CONTRIBUTING.md)
 
 # Table of Contents <a name="Table_of_Contents"></a>
 * [Introduction](#INTRODUCTION)
@@ -20,14 +20,14 @@ REMOTELY DEPLOY APACHE AND DEPLOY WEBSITES FROM GITHUB AUTOMATICALLY TO REMOTE S
             *  [How to install SUDO](#How_to_install)
             *  [How to Add User to Sudoers](#How_to_Add)
         *  [Install openssh-client](#Install_openssh-client)
-  * [How to use the RDA script](#How_to_use)
-      * [Download the GitHub project](#Download_the_GitHub)
-      * [Running the script RDA](#Running_the_script)
-  * [Development](#Development)
-  * [Todolist](#Todolist)
-  * [License](#License)
-  * [Contributor Covenant](#Contributor_Covenant)
-  * [Contact](#Contact)
+* [How to use the RDA script](#How_to_use)
+    * [Download the GitHub project](#Download_the_GitHub)
+    * [Running the script RDA](#Running_the_script)
+* [Development](#Development)
+* [Todolist](#Todolist)
+* [License](#License)
+* [Contributor Covenant](#Contributor_Covenant)
+* [Contact](#Contact)
 
 
 
