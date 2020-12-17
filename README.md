@@ -19,7 +19,7 @@ REMOTELY DEPLOY APACHE AND DEPLOY WEBSITES FROM GITHUB AUTOMATICALLY TO REMOTE S
         *  [Using SUDO](#SUDO)
             *  [How to install SUDO](#How_to_install)
             *  [How to Add User to Sudoers](#How_to_Add)
-        *  [Install openssh-client](#Install_openssh-client)
+        *  [Install openssh-server](#Install_openssh-server)
 * [How to use the RDA script](#How_to_use)
     * [Download the GitHub project](#Download_the_GitHub)
     * [Running the script RDA](#Running_the_script)
@@ -268,13 +268,13 @@ Make sure to change "username" to the name of the user you want to use with the 
 
 [<div align="center">[Table of Contents]</div>](#Table_of_Contents) 
 
-### Install openssh-client  <a name="Install_openssh-client"></a>
+### Install openssh-server  <a name="Install_openssh-server"></a>
 
 In general, the openssh-client package is installed on the servers, it is important that it is installed on the servers to be installed so that the script can do the remote installation.
 If not, install it with the following command.
 
 ```ssh
-$ sudo apt install openssh-client
+$ sudo apt install openssh-server
 ```
 
 
