@@ -112,6 +112,7 @@ Here are the Python modules used by the RDA script:
 $ sudo python3 -m pip3 install SomePackage
 ```
 
+You can also use the "requirements.txt" file to install Python modules.
 
 [<div align="center">[Table of Contents]</div>](#Table_of_Contents)
 
